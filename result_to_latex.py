@@ -156,6 +156,13 @@ def plot_graphs():
     eps_step_list= [0.001,0.002,0.003,0.005,0.007,0.010,0.015,0.020]
 
     pgd_list=([item for item in list if (not("BIM"  in item['attack']) and  ( item['eps']=='0.03'))])
+    pgd_list = [
+    {
+        key: float(value.strip('%\t')) if key in ('selfasr', 'others_asr') else value
+        for key, value in item.items()
+    }
+    for item in pgd_list
+]
     f1=plt.figure()
     f2=plt.figure()
     ax1 = f1.add_subplot(111)
@@ -170,7 +177,6 @@ def plot_graphs():
         for item in pgd_list:
             try:
                 if (item["attack"] ==attack_method):
-                    print(item)
                     BIM_self.append(float(item["selfasr"][:-1]))
                     BIM_others.append(float(item["others_asr"][:-1]))
                     BIM_step.append(item["step"])
@@ -214,46 +220,57 @@ def draw_tables_time():
                     x.add_row(items_to_show)
     print((x.get_string(sortby="attack")))
 
+
+
+import matplotlib.pyplot as plt
+import itertools
+import io
+
 def plot_graphs_eps():
 
-    list=megalist(path)
-    eps_list=[0.01,0.03,0.05,0.07]
+    list = megalist(path)
+    eps_list = [0.01, 0.03, 0.05, 0.07]
     print(list)
-    pgd_list=([item for item in list if (not("BIM"  in item['attack'] and item["step"]=='0.01'))])
+    pgd_list = ([item for item in list if (not("BIM" in item['attack'] and item['step'] == '0.002'))])
     pgd_list = [
-    {
-        key: float(value.strip('%\t')) if key in ('selfasr', 'others_asr') else value
-        for key, value in item.items()
-    }
-    for item in pgd_list
-]
-    f1=plt.figure()
-    f2=plt.figure()
+        {
+            key: float(value.strip('%\t')) if key in ('selfasr', 'others_asr') else value
+            for key, value in item.items()
+        }
+        for item in pgd_list
+    ]
+
+    f1 = plt.figure()
+    f2 = plt.figure()
     ax1 = f1.add_subplot(111)
     ax2 = f2.add_subplot(111)
-    marker = itertools.cycle(('v', '+', 'd', 'x', '*')) 
-    # for i,attack_method in enumerate ( ["PGD+CRN10","PGD+CRN5","FGSM+CRN10","FGSM+CRN5","PGD","FGSM"]):
-    for i,attack_method in enumerate ( ["PGD","FGSM"]):
+    marker = itertools.cycle(('v', '+', 'd', 'x', '*'))
+    colors = itertools.cycle(('red', 'blue', 'green', 'purple', 'orange'))
+    
+    for i, attack_method in enumerate(["PGD", "FGSM"]):
 
-        BIM_others,BIM_self,BIM_step=[],[],[]
+        BIM_others, BIM_self, BIM_step = [], [], []
         for item in pgd_list:
-            if (item["attack"] ==attack_method and item["others_asr"]>0 ):
-                    BIM_others.append((item["others_asr"]))
-                    BIM_self.append((item["selfasr"]))
-                    BIM_step.append(item["eps"])
-        ax1.plot(BIM_step,BIM_others,marker=next(marker),label=attack_method )
-        ax2.plot(BIM_step,BIM_self,marker=next(marker),label=attack_method)
+            if (item["attack"] == attack_method and item["others_asr"] > 0 and item['step'] == '0.002'):
+                print(item)
+
+                BIM_others.append((item["others_asr"]))
+                BIM_self.append((item["selfasr"]))
+                BIM_step.append(item["eps"])
+                
+        current_color = next(colors)
+        ax1.scatter(BIM_step, BIM_others, marker=next(marker), label=attack_method, color=current_color)
+        ax1.plot(BIM_step, BIM_others, color=current_color, linestyle='--')
+        ax2.scatter(BIM_step, BIM_self, marker=next(marker), label=attack_method, color=current_color)
+        ax2.plot(BIM_step, BIM_self, color=current_color, linestyle='--')
 
     ax1.set_title(dataset)
-    ax1.set_xlabel("EPS ")
+    ax1.set_xlabel(r"$\epsilon$")
     ax1.set_ylabel("ASR(%) Benign")
     ax1.set_ylim(bottom=0)
 
-
-
-
     ax2.set_title(dataset)
-    ax2.set_xlabel("EPS")
+    ax2.set_xlabel(r"$\epsilon$")
     ax2.set_ylabel("ASR(%) Adversary")
     ax2.set_ylim(bottom=0)
 
@@ -261,13 +278,11 @@ def plot_graphs_eps():
     ax2.legend(loc=legend_location)
 
     buf = io.BytesIO()
-    f1.savefig('./plots/'+dataset+'_ASR_EPS.eps')
-    f1.savefig('./plots/'+dataset+'_ASR_EPS.png')
+    f1.savefig('./plots/' + dataset + '_ASR_EPS_v2.eps')
+    f1.savefig('./plots/' + dataset + '_ASR_EPS_v2.png')
 
- 
-    f2.savefig('./plots/'+dataset+'_others_EPS.eps')
-    f2.savefig('./plots/'+dataset+'_others_EPS.png')
-
+    f2.savefig('./plots/' + dataset + '_others_EPS_v2.eps')
+    f2.savefig('./plots/' + dataset + '_others_EPS_v2.png')
 
 
 def extract_list_AATR(file):
