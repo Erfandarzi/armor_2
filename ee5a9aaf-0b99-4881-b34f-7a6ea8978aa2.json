@@ -1,0 +1,1 @@
+{"pgd": 0.01, "eps": 0.02, "step": 0.003, "projected": 1.0, "iterrround": 6.0, "useGC": 1.0, "noiseinj": 0.0, "beta": 0.5, "gamma": 1.05, "advpercent": 1.0, "client_num": 3, "modality": ["MRI"], "dp": ["dp"], "training_method": ["Client_noise_adv"], "asr_self": 0.5533333333333333, "asr_avg": 0.5533333333333333, "asr_std": 0.0, "acc_avg": 0.5533333333333333, "acc_std": 0.0}

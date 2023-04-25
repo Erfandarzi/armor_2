@@ -1,0 +1,30 @@
+import argparse
+
+
+def args_parser():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--model_name', type=str, default='noise_only')
+    parser.add_argument('--random_seed', type=int, default=0)
+    parser.add_argument('--cuda', type=int, default=0)
+    parser.add_argument('--global_noise_scale', type=float, default=0.01)
+    parser.add_argument('--clip_threshold', type=int, default=10)
+    parser.add_argument('--percent_samples_retrain', type=float, default=1, help="percentage of samples for adversarial training")
+    parser.add_argument('--comm_round', type=int, default=50, help="rounds of training")
+    parser.add_argument('--client_num_in_total', type=int, default=3, help="number of users in total")
+    parser.add_argument('--draw_tables', type=str, default=0, help="draw tabels")
+    parser.add_argument('--timer', type=int, default=0, help="Calculate time")
+    parser.add_argument('--plot_graphs', type=str, default=0, help="plot graphs")
+    parser.add_argument('--batch_size', type=int, default=100, help="local batch size")
+    parser.add_argument('--epoch', type=int, default=5, help="local epoch")
+    parser.add_argument('--lr', type=float, default=0.02, help='learning rate')
+    parser.add_argument('--total_models', type=int, default=50, help='To do Global PGD noise attack, how many total models are saved')
+    parser.add_argument('--loaded_models', type=int, default=0, help='To do Global PGD noise attack, how many rounds are loaded')
+    parser.add_argument('--retrain_round', type=int, default=1, help="num of server retrain round")
+    parser.add_argument('--dp', type=bool, default=True, help="If server receives noisy models")
+    parser.add_argument('--all_numbers', type=int, default=0, help="caclulate noise on all various settings")
+    parser.add_argument('--model', type=str, default='cnn', help='model name')
+    parser.add_argument('--noise_adv', type=bool, default='false', help='noisy adv training')
+    parser.add_argument('--dataset', type=str, default='mnist', help="name of dataset")
+    parser.add_argument('--iid', type=int, default=1, help='whether iid or not, 1 for iid, 0 for non-iid')
+    args = parser.parse_args()
+    return args
