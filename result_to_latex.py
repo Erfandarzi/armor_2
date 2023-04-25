@@ -154,21 +154,28 @@ def draw_tables_AATR():
 def plot_graphs():
     list=megalist(path)
     eps_step_list= [0.001,0.002,0.003,0.005,0.007,0.010,0.015,0.020]
-    pgd_list=([item for item in list if (not("BIM"  in item['attack']) and  ( item['eps']=='0.02'))])
+
+    pgd_list=([item for item in list if (not("BIM"  in item['attack']) and  ( item['eps']=='0.03'))])
     f1=plt.figure()
     f2=plt.figure()
     ax1 = f1.add_subplot(111)
     ax2 = f2.add_subplot(111)
     marker = itertools.cycle(('v', '+', 'd', 'x', '*')) 
 
-    for i,attack_method in enumerate ( ["PGD+CRN10","PGD+CRN5","PGD"]):
+    # for i,attack_method in enumerate ( ["PGD+CRN10","PGD+CRN5","PGD"]):
+    for i,attack_method in enumerate ( ["PGD"]):
+
         markerlist=["D","o","v"]
         BIM_others,BIM_self,BIM_step=[],[],[]
         for item in pgd_list:
-            if (item["attack"] ==attack_method):
-                BIM_self.append(float(item["selfasr"][:-1]))
-                BIM_others.append(float(item["others_asr"][:-1]))
-                BIM_step.append(item["step"])
+            try:
+                if (item["attack"] ==attack_method):
+                    print(item)
+                    BIM_self.append(float(item["selfasr"][:-1]))
+                    BIM_others.append(float(item["others_asr"][:-1]))
+                    BIM_step.append(item["step"])
+            except:
+                pass
     
         ax1.plot(BIM_step,BIM_others,marker=next(marker),label=attack_method )
         ax2.plot(BIM_step,BIM_self,marker=next(marker),label=attack_method)
@@ -211,19 +218,29 @@ def plot_graphs_eps():
 
     list=megalist(path)
     eps_list=[0.01,0.03,0.05,0.07]
-    pgd_list=([item for item in list if (not("BIM"  in item['attack']) and ( item['step']=='0.010'))])
+    print(list)
+    pgd_list=([item for item in list if (not("BIM"  in item['attack'] and item["step"]=='0.01'))])
+    pgd_list = [
+    {
+        key: float(value.strip('%\t')) if key in ('selfasr', 'others_asr') else value
+        for key, value in item.items()
+    }
+    for item in pgd_list
+]
     f1=plt.figure()
     f2=plt.figure()
     ax1 = f1.add_subplot(111)
     ax2 = f2.add_subplot(111)
     marker = itertools.cycle(('v', '+', 'd', 'x', '*')) 
-    for i,attack_method in enumerate ( ["PGD+CRN10","PGD+CRN5","FGSM+CRN10","FGSM+CRN5","PGD","FGSM"]):
+    # for i,attack_method in enumerate ( ["PGD+CRN10","PGD+CRN5","FGSM+CRN10","FGSM+CRN5","PGD","FGSM"]):
+    for i,attack_method in enumerate ( ["PGD","FGSM"]):
+
         BIM_others,BIM_self,BIM_step=[],[],[]
         for item in pgd_list:
-            if (item["attack"] ==attack_method):
-                BIM_others.append(float(item["others_asr"][:-1]))
-                BIM_self.append(float(item["selfasr"][:-1]))
-                BIM_step.append(item["eps"])
+            if (item["attack"] ==attack_method and item["others_asr"]>0 ):
+                    BIM_others.append((item["others_asr"]))
+                    BIM_self.append((item["selfasr"]))
+                    BIM_step.append(item["eps"])
         ax1.plot(BIM_step,BIM_others,marker=next(marker),label=attack_method )
         ax2.plot(BIM_step,BIM_self,marker=next(marker),label=attack_method)
 
@@ -302,9 +319,9 @@ def extract_list_AATR(file):
 
 def plot_graphs_alignment():
     dataset="/"+args.dataset
-    path=r'.\by_client\uplink_noise' + dataset +r'\result_out'
-    path_aatr=r'.\by_client\uplink_noise'+dataset+r'\ATR_pic\out'
-    path_time=r'.\by_client\uplink_noise' +dataset +r'\client_num_3\Attack_fixed\Client_noise_only\attack_time'
+    path=r'.\by_client\dp' + dataset +r'\result_out'
+    path_aatr=r'.\by_client\dp'+dataset+r'\ATR_pic\out'
+    path_time=r'.\by_client\dp' +dataset +r'\client_num_3\Attack_fixed\Client_noise_only\attack_time'
 
 
 
@@ -314,9 +331,9 @@ if __name__ == '__main__':
     device = torch.device("cuda:{}".format(args.cuda))
     args.device = device
     dataset="/"+args.dataset
-    path=r'.\by_client\uplink_noise' + dataset +r'\result_out'
-    path_aatr=r'.\by_client\uplink_noise'+dataset+r'\ATR_pic\out'
-    path_time=r'.\by_client\uplink_noise' +dataset +r'\client_num_3\Attack_fixed\Client_resnoise_only\attack_time'
+    path=r'.\by_client\dp' + dataset +r'\result_out'
+    path_aatr=r'.\by_client\dp'+dataset+r'\ATR_pic\out'
+    path_time=r'.\by_client\dp' +dataset +r'\client_num_3\Attack_fixed\Client_resnoise_only\attack_time'
     fix_random(0)
     legend_location='lower right'
     if (args.dataset=='Glioma'):
