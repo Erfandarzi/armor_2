@@ -346,17 +346,13 @@ if __name__ == '__main__':
     device = torch.device("cuda:{}".format(args.cuda))
     args.device = device
     dataset="/"+args.dataset
+    
     path=r'.\by_client\dp' + dataset +r'\result_out'
     path_aatr=r'.\by_client\dp'+dataset+r'\ATR_pic\out'
     path_time=r'.\by_client\dp' +dataset +r'\client_num_3\Attack_fixed\Client_resnoise_only\attack_time'
     fix_random(0)
     legend_location='lower right'
-    if (args.dataset=='Glioma'):
-        dataset="Glioma"
-    if (args.dataset=='Pathology'):
-        dataset="Pathology"
-    if (args.dataset=='MRI'):
-        dataset="Meningioma"
+    dataset=args.dataset
     if (args.draw_tables=='ASR'):
                 print("drawing tables..")
                 draw_tables_ASR()
